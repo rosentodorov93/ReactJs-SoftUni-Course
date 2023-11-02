@@ -1,6 +1,19 @@
 import TodoItem from "./TodoItem";
+import { useState, useEffect } from "react";
+import * as todosService from '../services/todosService';
 
-export default function TodoList({ todos }) {
+export default function TodoList() {
+
+  const [todos, setTodos] = useState([]);
+  useEffect(()=>{
+    todosService.getAll()
+    .then(res => setTodos(res))
+  },[])
+
+  const onChangeStatusHandler = (id) =>{
+    setTodos(todos => todos.map(todo => todo._id == id ? {...todo, isCompleted: !todo.isCompleted} : todo))
+  }
+
   return (
     <main className="main">
       <section className="todo-list-container">
@@ -21,7 +34,9 @@ export default function TodoList({ todos }) {
             </thead>
             <tbody>
               {todos.map((todo) => (
-                <TodoItem key={todo._id} todo={todo} />
+                <TodoItem key={todo._id}
+                          todo={todo}
+                          onChangeStatusHandler={onChangeStatusHandler}/>
               ))}
             </tbody>
           </table>
