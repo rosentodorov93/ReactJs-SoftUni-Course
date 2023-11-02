@@ -1,9 +1,13 @@
-export default function TodoItem() {
+export default function TodoItem({
+  todo,
+}) {
   return (
-    <tr>
-      <th className="table-header-task">Task</th>
-      <th className="table-header-status">Status</th>
-      <th className="table-header-action">Action</th>
+    <tr className={`todo${todo.isCompleted ? ' is-completed': ''}`}>
+      <th>{todo.text}</th>
+      <th>{todo.isCompleted ? "Completed" : "In Progres"}</th>
+      <th className="todo-action">
+          <button className="btn todo-btn">Change Status</button>
+      </th>
     </tr>
   );
 }

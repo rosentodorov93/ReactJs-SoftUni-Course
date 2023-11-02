@@ -1,5 +1,6 @@
-export default function TodoList() {
+import TodoItem from "./TodoItem";
 
+export default function TodoList({ todos }) {
   return (
     <main className="main">
       <section className="todo-list-container">
@@ -12,9 +13,17 @@ export default function TodoList() {
         <div className="table-wrapper">
           <table className="table">
             <thead>
-            
+              <tr>
+                <th className="table-header-task">Task</th>
+                <th className="table-header-status">Status</th>
+                <th className="table-header-action">Action</th>
+              </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              {todos.map((todo) => (
+                <TodoItem key={todo._id} todo={todo} />
+              ))}
+            </tbody>
           </table>
         </div>
       </section>
