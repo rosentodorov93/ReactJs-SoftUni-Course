@@ -3,11 +3,13 @@ import * as userService from '../services/userService';
 import UserItem from "./UserItem";
 import UserCreate from "./UserCreate";
 import UserDetails from "./UserDetails";
+import UserDelete from "./UserDelete";
 
 export default function UserList() {
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(()=>{
@@ -21,8 +23,12 @@ export default function UserList() {
     }
 
     const onInfoClick = (userId) =>{
-        console.log(userId);
         setShowDetails(true);
+        setSelectedUser(userId);
+    }
+
+    const onDeleteClick =(userId) =>{
+        setShowDelete(true);
         setSelectedUser(userId);
     }
 
@@ -38,10 +44,21 @@ export default function UserList() {
         setShowCreate(false);
     }
 
+    const deleteHandler = async() =>{
+        const result = await userService.remove(selectedUser);
+
+        setUsers(state => state.filter(s => s._id !== selectedUser));
+
+        setShowDelete(false);
+
+        return result;
+    }
+
   return (
     <>
       {showCreate && <UserCreate onClose={() => setShowCreate(false)} onCreateHandler={onCreateHandler}/>} 
       {showDetails && <UserDetails onClose={()=>{setShowDetails(false)}} userId={selectedUser}/>} 
+      {showDelete && <UserDelete onCLose={()=>{setShowDelete(false)}} deleteHandler={deleteHandler}/>}
 
       <div className="table-wrapper">
         <table className="table">
@@ -142,7 +159,7 @@ export default function UserList() {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => <UserItem key={user._id} user={user} onInfoClick={onInfoClick}/>)}
+            {users.map(user => <UserItem key={user._id} user={user} onInfoClick={onInfoClick} onDeleteClick={onDeleteClick}/>)}
           </tbody>
         </table>
       </div>
