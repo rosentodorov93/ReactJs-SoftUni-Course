@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import * as userService from '../services/userService';
 import UserItem from "./UserItem";
+import UserCreate from "./UserCreate";
+import UserDetails from "./UserDetails";
 
 export default function UserList() {
     const [users, setUsers] = useState([]);
+    const [showCreate, setShowCreate] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(()=>{
         userService.getAll()
@@ -11,8 +16,33 @@ export default function UserList() {
         .catch(err => console.log(err))
     },[])
 
+    const onAddUserClick = ()=>{
+        setShowCreate(true);
+    }
+
+    const onInfoClick = (userId) =>{
+        console.log(userId);
+        setShowDetails(true);
+        setSelectedUser(userId);
+    }
+
+    const onCreateHandler = async(e) =>{
+        e.preventDefault()
+
+        const data = Object.fromEntries(new FormData(e.currentTarget));
+
+        const result = await userService.create(data);
+
+        setUsers(state => [...state, result]);
+
+        setShowCreate(false);
+    }
+
   return (
     <>
+      {showCreate && <UserCreate onClose={() => setShowCreate(false)} onCreateHandler={onCreateHandler}/>} 
+      {showDetails && <UserDetails onClose={()=>{setShowDetails(false)}} userId={selectedUser}/>} 
+
       <div className="table-wrapper">
         <table className="table">
           <thead>
@@ -112,11 +142,11 @@ export default function UserList() {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => <UserItem key={user._id} user={user}/>)}
+            {users.map(user => <UserItem key={user._id} user={user} onInfoClick={onInfoClick}/>)}
           </tbody>
         </table>
       </div>
-      <button className="btn-add btn">Add new user</button>
+      <button className="btn-add btn" onClick={onAddUserClick}>Add new user</button>
     </>
   );
 }
